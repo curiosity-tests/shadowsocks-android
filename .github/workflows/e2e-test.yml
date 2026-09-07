@@ -53,6 +53,14 @@ jobs:
         with:
           distribution: jetbrains
           java-version: 21
+        env:
+          # The jetbrains distribution pages through
+          # api.github.com/repos/JetBrains/JetBrainsRuntime/releases to resolve a version, and
+          # it only authenticates from $GITHUB_TOKEN - it ignores setup-java's own `token`
+          # input (src/distributions/jetbrains/installer.ts). Unauthenticated, those dozens of
+          # calls per job hit the hosted runner's shared-IP limit: "API rate limit exceeded for
+          # 52.176.124.224", which fails this step before anything is built.
+          GITHUB_TOKEN: ${{ github.token }}
 
       - uses: dtolnay/rust-toolchain@stable
         with:
